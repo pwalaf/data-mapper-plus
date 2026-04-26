@@ -1,0 +1,800 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: products
+  - name: stats
+  - name: schema
+  - name: students
+  - name: sessions
+  - name: transactions
+  - name: goals
+  - name: fx
+  - name: finance
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HealthStatus" }
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema: { type: string }
+        - name: category
+          in: query
+          required: false
+          schema: { type: string }
+        - name: status
+          in: query
+          required: false
+          schema: { type: string, enum: [active, inactive, pending] }
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Product" }
+    post:
+      operationId: createProduct
+      tags: [products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+
+  /products/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer }
+    get:
+      operationId: getProduct
+      tags: [products]
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "404": { description: Not found }
+    put:
+      operationId: updateProduct
+      tags: [products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductInput" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "404": { description: Not found }
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      responses:
+        "204": { description: Deleted }
+        "404": { description: Not found }
+
+  /stats/overview:
+    get:
+      operationId: getStatsOverview
+      tags: [stats]
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StatsOverview" }
+
+  /stats/category-breakdown:
+    get:
+      operationId: getCategoryBreakdown
+      tags: [stats]
+      responses:
+        "200":
+          description: Breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CategoryStat" }
+
+  /stats/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [stats]
+      responses:
+        "200":
+          description: Activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ActivityItem" }
+
+  /schema/{resource}:
+    get:
+      operationId: getResourceSchema
+      tags: [schema]
+      parameters:
+        - name: resource
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [products, students, sessions, transactions]
+      responses:
+        "200":
+          description: Resource schema
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ResourceSchema" }
+
+  /students:
+    get:
+      operationId: listStudents
+      tags: [students]
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Student" }
+    post:
+      operationId: createStudent
+      tags: [students]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StudentInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Student" }
+
+  /students/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer }
+    put:
+      operationId: updateStudent
+      tags: [students]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StudentInput" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Student" }
+        "404": { description: Not found }
+    delete:
+      operationId: deleteStudent
+      tags: [students]
+      responses:
+        "204": { description: Deleted }
+        "404": { description: Not found }
+
+  /sessions:
+    get:
+      operationId: listSessions
+      tags: [sessions]
+      parameters:
+        - name: studentId
+          in: query
+          required: false
+          schema: { type: integer }
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/LessonSession" }
+    post:
+      operationId: createSession
+      tags: [sessions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LessonSessionInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LessonSession" }
+
+  /sessions/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer }
+    put:
+      operationId: updateSession
+      tags: [sessions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LessonSessionInput" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LessonSession" }
+        "404": { description: Not found }
+    delete:
+      operationId: deleteSession
+      tags: [sessions]
+      responses:
+        "204": { description: Deleted }
+        "404": { description: Not found }
+
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [transactions]
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema: { type: string, enum: [income, expense] }
+        - name: source
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Transaction" }
+    post:
+      operationId: createTransaction
+      tags: [transactions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TransactionInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Transaction" }
+
+  /transactions/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer }
+    put:
+      operationId: updateTransaction
+      tags: [transactions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TransactionInput" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Transaction" }
+        "404": { description: Not found }
+    delete:
+      operationId: deleteTransaction
+      tags: [transactions]
+      responses:
+        "204": { description: Deleted }
+        "404": { description: Not found }
+
+  /goals:
+    get:
+      operationId: getGoals
+      tags: [goals]
+      responses:
+        "200":
+          description: Goals
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Goals" }
+    put:
+      operationId: updateGoals
+      tags: [goals]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GoalsInput" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Goals" }
+
+  /fx:
+    get:
+      operationId: listFxRates
+      tags: [fx]
+      responses:
+        "200":
+          description: Rates
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/FxRate" }
+    put:
+      operationId: upsertFxRate
+      tags: [fx]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FxRateInput" }
+      responses:
+        "200":
+          description: Upserted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FxRate" }
+
+  /finance/overview:
+    get:
+      operationId: getFinanceOverview
+      tags: [finance]
+      responses:
+        "200":
+          description: Finance overview in base currency
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FinanceOverview" }
+
+  /finance/timeseries:
+    get:
+      operationId: getFinanceTimeseries
+      tags: [finance]
+      parameters:
+        - name: months
+          in: query
+          required: false
+          schema: { type: integer, default: 12 }
+      responses:
+        "200":
+          description: Monthly time series in base currency
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/MonthlyPoint" }
+
+  /finance/by-source:
+    get:
+      operationId: getFinanceBySource
+      tags: [finance]
+      parameters:
+        - name: months
+          in: query
+          required: false
+          schema: { type: integer, default: 6 }
+      responses:
+        "200":
+          description: Income split per business source in base currency
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SourceBreakdown" }
+
+  /finance/projection:
+    get:
+      operationId: getFinanceProjection
+      tags: [finance]
+      parameters:
+        - name: months
+          in: query
+          required: false
+          schema: { type: integer, default: 6 }
+        - name: degree
+          in: query
+          required: false
+          schema: { type: integer, default: 1, minimum: 1, maximum: 3 }
+      responses:
+        "200":
+          description: Regression projection of monthly income in base currency
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Projection" }
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status: { type: string }
+      required: [status]
+
+    ProductStatus:
+      type: string
+      enum: [active, inactive, pending]
+
+    Product:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        category: { type: string }
+        price: { type: number }
+        stock: { type: integer }
+        status: { $ref: "#/components/schemas/ProductStatus" }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, name, category, price, stock, status, createdAt, updatedAt]
+
+    ProductInput:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        category: { type: string, minLength: 1 }
+        price: { type: number, minimum: 0 }
+        stock: { type: integer, minimum: 0 }
+        status: { $ref: "#/components/schemas/ProductStatus" }
+      required: [name, category, price, stock, status]
+
+    StatsOverview:
+      type: object
+      properties:
+        totalProducts: { type: integer }
+        activeProducts: { type: integer }
+        inactiveProducts: { type: integer }
+        pendingProducts: { type: integer }
+        totalStock: { type: integer }
+        potentialRevenue: { type: number }
+        averagePrice: { type: number }
+        categoriesCount: { type: integer }
+      required:
+        - totalProducts
+        - activeProducts
+        - inactiveProducts
+        - pendingProducts
+        - totalStock
+        - potentialRevenue
+        - averagePrice
+        - categoriesCount
+
+    CategoryStat:
+      type: object
+      properties:
+        category: { type: string }
+        count: { type: integer }
+        revenue: { type: number }
+        stock: { type: integer }
+      required: [category, count, revenue, stock]
+
+    ActivityItem:
+      type: object
+      properties:
+        id: { type: integer }
+        productId: { type: integer }
+        productName: { type: string }
+        action: { type: string, enum: [created, updated, deleted] }
+        createdAt: { type: string, format: date-time }
+      required: [id, productId, productName, action, createdAt]
+
+    FieldType:
+      type: string
+      enum:
+        - text
+        - number
+        - currency
+        - integer
+        - badge
+        - select
+        - date
+        - datetime
+        - boolean
+        - textarea
+
+    FieldOption:
+      type: object
+      properties:
+        value: { type: string }
+        label: { type: string }
+        tone:
+          type: string
+          enum: [success, warning, danger, neutral, info]
+      required: [value, label]
+
+    FieldSchema:
+      type: object
+      properties:
+        key: { type: string }
+        label: { type: string }
+        type: { $ref: "#/components/schemas/FieldType" }
+        showInTable: { type: boolean }
+        showInForm: { type: boolean }
+        sortable: { type: boolean }
+        searchable: { type: boolean }
+        required: { type: boolean }
+        options:
+          type: array
+          items: { $ref: "#/components/schemas/FieldOption" }
+        suffix: { type: string }
+        prefix: { type: string }
+        currencyField: { type: string }
+        defaultValue: {}
+      required: [key, label, type]
+
+    ResourceSchema:
+      type: object
+      properties:
+        name: { type: string }
+        plural: { type: string }
+        primaryKey: { type: string }
+        titleField: { type: string }
+        fields:
+          type: array
+          items: { $ref: "#/components/schemas/FieldSchema" }
+      required: [name, plural, primaryKey, titleField, fields]
+
+    Student:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        subject: { type: string }
+        level: { type: string }
+        contact: { type: string, nullable: true }
+        hourlyRate: { type: number }
+        currency: { type: string }
+        status: { type: string, enum: [active, paused, ended] }
+        notes: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, name, subject, level, hourlyRate, currency, status, createdAt, updatedAt]
+
+    StudentInput:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        subject: { type: string, minLength: 1 }
+        level: { type: string, minLength: 1 }
+        contact: { type: string, nullable: true }
+        hourlyRate: { type: number, minimum: 0 }
+        currency: { type: string, minLength: 3 }
+        status: { type: string, enum: [active, paused, ended] }
+        notes: { type: string, nullable: true }
+      required: [name, subject, level, hourlyRate, currency, status]
+
+    LessonSession:
+      type: object
+      properties:
+        id: { type: integer }
+        studentId: { type: integer }
+        studentName: { type: string }
+        occurredAt: { type: string, format: date-time }
+        durationMinutes: { type: integer }
+        ratePerHour: { type: number }
+        currency: { type: string }
+        amount: { type: number }
+        paid: { type: boolean }
+        notes: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required:
+        - id
+        - studentId
+        - studentName
+        - occurredAt
+        - durationMinutes
+        - ratePerHour
+        - currency
+        - amount
+        - paid
+        - createdAt
+        - updatedAt
+
+    LessonSessionInput:
+      type: object
+      properties:
+        studentId: { type: integer }
+        occurredAt: { type: string, format: date-time }
+        durationMinutes: { type: integer, minimum: 1 }
+        ratePerHour: { type: number, minimum: 0 }
+        currency: { type: string, minLength: 3 }
+        paid: { type: boolean }
+        notes: { type: string, nullable: true }
+      required: [studentId, occurredAt, durationMinutes, ratePerHour, currency, paid]
+
+    Transaction:
+      type: object
+      properties:
+        id: { type: integer }
+        type: { type: string, enum: [income, expense] }
+        source: { type: string, enum: [tutoring, apps, pdfs, other] }
+        category: { type: string }
+        amount: { type: number }
+        currency: { type: string }
+        occurredAt: { type: string, format: date-time }
+        description: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, type, source, category, amount, currency, occurredAt, createdAt, updatedAt]
+
+    TransactionInput:
+      type: object
+      properties:
+        type: { type: string, enum: [income, expense] }
+        source: { type: string, enum: [tutoring, apps, pdfs, other] }
+        category: { type: string, minLength: 1 }
+        amount: { type: number, minimum: 0 }
+        currency: { type: string, minLength: 3 }
+        occurredAt: { type: string, format: date-time }
+        description: { type: string, nullable: true }
+      required: [type, source, category, amount, currency, occurredAt]
+
+    Goals:
+      type: object
+      properties:
+        id: { type: integer }
+        baseCurrency: { type: string }
+        monthlyTarget: { type: number }
+        reinvestPct: { type: integer }
+        expensePct: { type: integer }
+        savingsPct: { type: integer }
+        updatedAt: { type: string, format: date-time }
+      required: [id, baseCurrency, monthlyTarget, reinvestPct, expensePct, savingsPct, updatedAt]
+
+    GoalsInput:
+      type: object
+      properties:
+        baseCurrency: { type: string, minLength: 3 }
+        monthlyTarget: { type: number, minimum: 0 }
+        reinvestPct: { type: integer, minimum: 0, maximum: 100 }
+        expensePct: { type: integer, minimum: 0, maximum: 100 }
+        savingsPct: { type: integer, minimum: 0, maximum: 100 }
+      required: [baseCurrency, monthlyTarget, reinvestPct, expensePct, savingsPct]
+
+    FxRate:
+      type: object
+      properties:
+        currency: { type: string }
+        rateToBase: { type: number }
+        updatedAt: { type: string, format: date-time }
+      required: [currency, rateToBase, updatedAt]
+
+    FxRateInput:
+      type: object
+      properties:
+        currency: { type: string, minLength: 3 }
+        rateToBase: { type: number, exclusiveMinimum: 0 }
+      required: [currency, rateToBase]
+
+    FinanceOverview:
+      type: object
+      properties:
+        baseCurrency: { type: string }
+        monthIncome: { type: number }
+        monthExpense: { type: number }
+        monthNet: { type: number }
+        prevMonthIncome: { type: number }
+        ytdIncome: { type: number }
+        ytdExpense: { type: number }
+        unpaidSessions: { type: number }
+        monthlyTarget: { type: number }
+        targetProgressPct: { type: number }
+      required:
+        - baseCurrency
+        - monthIncome
+        - monthExpense
+        - monthNet
+        - prevMonthIncome
+        - ytdIncome
+        - ytdExpense
+        - unpaidSessions
+        - monthlyTarget
+        - targetProgressPct
+
+    MonthlyPoint:
+      type: object
+      properties:
+        month: { type: string, description: "YYYY-MM" }
+        income: { type: number }
+        expense: { type: number }
+        net: { type: number }
+      required: [month, income, expense, net]
+
+    SourceBreakdown:
+      type: object
+      properties:
+        source: { type: string }
+        income: { type: number }
+        expense: { type: number }
+        net: { type: number }
+      required: [source, income, expense, net]
+
+    Projection:
+      type: object
+      properties:
+        baseCurrency: { type: string }
+        history:
+          type: array
+          items: { $ref: "#/components/schemas/MonthlyPoint" }
+        forecast:
+          type: array
+          items:
+            type: object
+            properties:
+              month: { type: string }
+              income: { type: number }
+            required: [month, income]
+        slope: { type: number }
+        intercept: { type: number }
+        degree: { type: integer }
+        rSquared: { type: number }
+        monthsToTarget:
+          type: integer
+          nullable: true
+          description: Estimated number of months to reach the monthly target. Null if slope <= 0.
+      required: [baseCurrency, history, forecast, slope, intercept, degree, rSquared]
