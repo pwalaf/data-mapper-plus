@@ -1,3 +1,24 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+  <rect width="180" height="180" rx="36" fill="#FF3C00"/>
+
+  <!-- Globe -->
+  <circle cx="90" cy="90" r="42" stroke="white" stroke-width="6"/>
+
+  <!-- Latitude -->
+  <path d="M48 90H132" stroke="white" stroke-width="5" stroke-linecap="round"/>
+  <path d="M57 72C68 78 112 78 123 72" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <path d="M57 108C68 102 112 102 123 108" stroke="white" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Longitude -->
+  <path d="M90 48C102 60 102 120 90 132" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <path d="M90 48C78 60 78 120 90 132" stroke="white" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Analytics line -->
+  <path d="M60 112L78 94L94 102L120 74" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Data points -->
+  <circle cx="60" cy="112" r="4" fill="white"/>
+  <circle cx="78" cy="94" r="4" fill="white"/>
+  <circle cx="94" cy="102" r="4" fill="white"/>
+  <circle cx="120" cy="74" r="4" fill="white"/>
 </svg>
